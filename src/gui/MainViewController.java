@@ -40,7 +40,7 @@ public class MainViewController implements Initializable {
 	}
 	@FXML
 	public void onDepartmentAction() {
-		System.out.println("Department");
+		loadView("/gui/DepartmentList.fxml");
 	}
 	
 	@Override
