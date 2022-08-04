@@ -49,7 +49,8 @@ public class DepartmentListController implements Initializable {
 	public void onBtNewAction(ActionEvent event) {
 		//Pegando o stage atual para entrar com o modal
 		Stage parentStage = Utils.currentStage(event);
-		createDialogForm("/gui/DepartmentForm.fxml", parentStage);
+		Department obj = new Department();
+		createDialogForm(obj, "/gui/DepartmentForm.fxml", parentStage);
 	}
 	
 	public void setDepartmentService(DepartmentService service) {
@@ -80,13 +81,18 @@ public class DepartmentListController implements Initializable {
 		tableViewDepartment.prefHeightProperty().bind(stage.heightProperty());
 	}
 	
-	private void createDialogForm(String absolutName, Stage parentStage) {
+	private void createDialogForm(Department obj, String absolutName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absolutName));
 			Pane pane = loader.load();
 			
-			//Instanciar novo stage (sobrepor a tela)
+			DepartmentFormController controller = loader.getController();
+			controller.setDepartment(obj);
+			controller.setDepartmentService(new DepartmentService());
+			controller.updateFormData();
 			
+			
+			//Instanciar novo stage (sobrepor a tela)
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Enter department data");
 			dialogStage.setScene(new Scene(pane)); // Instanciar nova cena pelo parametro pane.
