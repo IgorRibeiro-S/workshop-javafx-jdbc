@@ -1,5 +1,6 @@
 package gui;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -24,6 +27,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entities.Seller;
 import model.services.SellerService;
@@ -47,13 +52,13 @@ public class SellerListController implements Initializable, DataChangeListener {
 
 	@FXML
 	private TableColumn<Seller, String> tableViewColumnName;
-	
+
 	@FXML
 	private TableColumn<Seller, String> tableViewColumnEmail;
-	
+
 	@FXML
 	private TableColumn<Seller, Date> tableViewColumnBirthDate;
-	
+
 	@FXML
 	private TableColumn<Seller, Double> tableViewColumnBaseSalary;
 
@@ -98,14 +103,14 @@ public class SellerListController implements Initializable, DataChangeListener {
 		Utils.formatTableColumnDate(tableViewColumnBirthDate, "dd/MM/yyyy");
 		tableViewColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
 		Utils.formatTableColumnDouble(tableViewColumnBaseSalary, 2);
-		
+
 		// TableView acompanhar tamanho da view principal
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewSeller.prefHeightProperty().bind(stage.heightProperty());
 	}
 
 	private void createDialogForm(Seller obj, String absolutName, Stage parentStage) {
-		/*try {
+		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absolutName));
 			Pane pane = loader.load();
 
@@ -126,7 +131,7 @@ public class SellerListController implements Initializable, DataChangeListener {
 
 		} catch (IOException e) {
 			Alerts.showAlert("IOException", "Error", e.getMessage(), AlertType.ERROR);
-		}*/
+		}
 	}
 
 	@Override
@@ -148,8 +153,7 @@ public class SellerListController implements Initializable, DataChangeListener {
 					return;
 				}
 				setGraphic(button);
-				button.setOnAction(
-						event -> createDialogForm(obj, "/gui/SellerForm.fxml", Utils.currentStage(event)));
+				button.setOnAction(event -> createDialogForm(obj, "/gui/SellerForm.fxml", Utils.currentStage(event)));
 			}
 		});
 	}
