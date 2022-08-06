@@ -1,8 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -17,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Seller;
@@ -36,6 +40,15 @@ public class SellerFormController implements Initializable {
 	private TextField textFieldName;
 
 	@FXML
+	private TextField textFieldEmail;
+
+	@FXML
+	private DatePicker textFieldBirthDate;
+
+	@FXML
+	private TextField textFieldBaseSalary;
+
+	@FXML
 	private Button BtSave;
 
 	@FXML
@@ -44,18 +57,27 @@ public class SellerFormController implements Initializable {
 	@FXML
 	private Label labelError;
 
+	@FXML
+	private Label labelErrorEmail;
+
+	@FXML
+	private Label labelErrorBirthDate;
+
+	@FXML
+	private Label labelErrorBaseSalary;
+
 	private Seller getFormData() {
 		Seller obj = new Seller();
 		ValidationException validationException = new ValidationException("Error Validation");
-		
+
 		obj.setId(Utils.tryParseToInt(textFieldId.getText()));
-		
-		if(textFieldName.getText() == null ||textFieldName.getText().trim().equals("")) {
+
+		if (textFieldName.getText() == null || textFieldName.getText().trim().equals("")) {
 			validationException.addErrors("name", "Field can't be empty");
 		}
 		obj.setName(textFieldName.getText());
-		
-		if(validationException.getErrors().size() > 0) {
+
+		if (validationException.getErrors().size() > 0) {
 			throw validationException;
 		}
 
@@ -70,8 +92,8 @@ public class SellerFormController implements Initializable {
 	public void setSellerService(SellerService service) {
 		this.service = service;
 	}
-	
-	public void subscribeDataChangeListerner(DataChangeListener listener){
+
+	public void subscribeDataChangeListerner(DataChangeListener listener) {
 		dataChangeListerners.add(listener);
 	}
 
@@ -89,20 +111,19 @@ public class SellerFormController implements Initializable {
 			Alerts.showAlert("Save", null, "SAVE SUCESS", AlertType.INFORMATION);
 			notifyDataChangeListener();
 			Utils.currentStage(event).close();
-		}catch(ValidationException e) {
+		} catch (ValidationException e) {
 			setErrorMessages(e.getErrors());
-		}
-		catch (DbException e) {
+		} catch (DbException e) {
 			Alerts.showAlert("ERROR Saving object", null, e.getMessage(), AlertType.ERROR);
 		}
 
 	}
 
 	private void notifyDataChangeListener() {
-		for(DataChangeListener listener : dataChangeListerners) {
+		for (DataChangeListener listener : dataChangeListerners) {
 			listener.onDataChanged();
 		}
-		
+
 	}
 
 	@FXML
@@ -116,8 +137,10 @@ public class SellerFormController implements Initializable {
 	}
 
 	private void initializeNodes() {
-		Constraints.setTextFieldMaxLength(textFieldName, 25);
-
+		Constraints.setTextFieldMaxLength(textFieldName, 45);
+		Constraints.setTextFieldDouble(textFieldBaseSalary);
+		Constraints.setTextFieldMaxLength(textFieldEmail, 40);
+		Constraints.setTextFieldMaxLength(textFieldBaseSalary, 10);
 	}
 
 	public void updateFormData() {
@@ -126,15 +149,21 @@ public class SellerFormController implements Initializable {
 		}
 		textFieldId.setText(String.valueOf(entity.getId()));
 		textFieldName.setText(entity.getName());
+		textFieldEmail.setText(entity.getEmail());
+		Locale.setDefault(Locale.US);
+		textFieldBaseSalary.setText(String.format("%.2f", entity.getBaseSalary()));
+		if (entity.getBirthDate() != null) {
+			textFieldBirthDate.setValue(LocalDate.ofInstant(entity.getBirthDate().toInstant(), ZoneId.systemDefault()));
+			;
+		}
 	}
-	
+
 	private void setErrorMessages(Map<String, String> errors) {
 		Set<String> fields = errors.keySet();
 		if (fields.contains("name")) {
 			labelError.setText(errors.get("name"));
 		}
-		
-		
+
 	}
 
 }
