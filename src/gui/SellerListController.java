@@ -1,14 +1,13 @@
 package gui;
 
-import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.Main;
 import db.DbException;
-import db.DbIntegrityException;
 import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
@@ -17,9 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -27,8 +24,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entities.Seller;
 import model.services.SellerService;
@@ -52,6 +47,15 @@ public class SellerListController implements Initializable, DataChangeListener {
 
 	@FXML
 	private TableColumn<Seller, String> tableViewColumnName;
+	
+	@FXML
+	private TableColumn<Seller, String> tableViewColumnEmail;
+	
+	@FXML
+	private TableColumn<Seller, Date> tableViewColumnBirthDate;
+	
+	@FXML
+	private TableColumn<Seller, Double> tableViewColumnBaseSalary;
 
 	@FXML
 	private Button btNew;
@@ -89,7 +93,12 @@ public class SellerListController implements Initializable, DataChangeListener {
 	private void initializeNodes() {
 		tableViewColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableViewColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-
+		tableViewColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+		tableViewColumnBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+		Utils.formatTableColumnDate(tableViewColumnBirthDate, "dd/MM/yyyy");
+		tableViewColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
+		Utils.formatTableColumnDouble(tableViewColumnBaseSalary, 2);
+		
 		// TableView acompanhar tamanho da view principal
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewSeller.prefHeightProperty().bind(stage.heightProperty());
