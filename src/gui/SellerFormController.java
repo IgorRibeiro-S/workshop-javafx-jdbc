@@ -1,9 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -91,10 +93,27 @@ public class SellerFormController implements Initializable {
 			validationException.addErrors("name", "Field can't be empty");
 		}
 		obj.setName(textFieldName.getText());
+		if (textFieldEmail.getText() == null || textFieldEmail.getText().trim().equals("")) {
+			validationException.addErrors("email", "Field can't be empty");
+		}
+		obj.setEmail(textFieldEmail.getText());
+
+		if (textFieldBirthDate.getValue() == null) {
+			validationException.addErrors("birthDate", "Field can't be empty");
+		} else {
+			Instant instant = Instant.from(textFieldBirthDate.getValue().atStartOfDay(ZoneId.systemDefault()));
+			obj.setBirthDate(Date.from(instant));
+		}
+		if (textFieldBaseSalary.getText() == null || textFieldBaseSalary.getText().trim().equals("")) {
+			validationException.addErrors("baseSalary", "Field can't be empty");
+		}
+		obj.setBaseSalary(Utils.tryParseToDouble(textFieldBaseSalary.getText()));
 
 		if (validationException.getErrors().size() > 0) {
 			throw validationException;
 		}
+		
+		obj.setDeparment(comboBoxDepartment.getValue());
 
 		return obj;
 
@@ -173,10 +192,10 @@ public class SellerFormController implements Initializable {
 			textFieldBirthDate.setValue(LocalDate.ofInstant(entity.getBirthDate().toInstant(), ZoneId.systemDefault()));
 			;
 		}
-		if(entity.getDeparment() == null) {
+		if (entity.getDeparment() == null) {
 			comboBoxDepartment.getSelectionModel().selectFirst();
-		}else {
-		comboBoxDepartment.setValue(entity.getDeparment());
+		} else {
+			comboBoxDepartment.setValue(entity.getDeparment());
 		}
 	}
 
@@ -193,6 +212,23 @@ public class SellerFormController implements Initializable {
 		Set<String> fields = errors.keySet();
 		if (fields.contains("name")) {
 			labelError.setText(errors.get("name"));
+		} else {
+			labelError.setText("");
+		}
+		if (fields.contains("birthDate")) {
+			labelErrorBirthDate.setText(errors.get("birthDate"));
+		} else {
+			labelErrorBirthDate.setText("");
+		}
+		if (fields.contains("email")) {
+			labelErrorEmail.setText(errors.get("email"));
+		} else {
+			labelErrorEmail.setText("");
+		}
+		if (fields.contains("baseSalary")) {
+			labelErrorBaseSalary.setText(errors.get("baseSalary"));
+		} else {
+			labelErrorBaseSalary.setText("");
 		}
 
 	}
